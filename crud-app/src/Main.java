@@ -38,6 +38,8 @@ public class Main {
 	private JScrollPane scrollPane;
 	private JTable table;
 	private JTextField textField;
+	
+	private Database db;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -53,6 +55,7 @@ public class Main {
 	}
 
 	public Main() {
+		db = new Database();
 		initialize();
 	}
 
