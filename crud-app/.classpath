@@ -7,5 +7,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="C:/Users/Administrator/git/crud-app/crud-app/mysql-connector-java-8.0.23.jar"/>
+	<classpathentry kind="lib" path="images"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
