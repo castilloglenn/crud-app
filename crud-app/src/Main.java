@@ -24,7 +24,7 @@ public class Main {
 	}
 
 	/**
-	 * Create the application.
+	 * Create the application
 	 */
 	public Main() {
 		initialize();
