@@ -177,7 +177,8 @@ public class Main {
 		JButton submitButton = new JButton("SUBMIT");
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
+				// initially generate a select * command and paste to the JTable
+				table.setModel(su.generateTable(db.fetchAll(), COLUMNS));
 			}
 		});
 		sl_panel.putConstraint(SpringLayout.NORTH, submitButton, 7, SpringLayout.SOUTH, title);

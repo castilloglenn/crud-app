@@ -1,4 +1,5 @@
 import java.util.Calendar;
+import javax.swing.table.DefaultTableModel;
 
 public class SystemUtility {
 	
@@ -36,6 +37,20 @@ public class SystemUtility {
 		}
 		
 		return Long.parseLong(markup.toString());
+	}
+	
+	@SuppressWarnings("serial")
+	public DefaultTableModel generateTable(Object[][] rows, Object[] column) {
+		return new DefaultTableModel(
+			rows, column
+			) {
+				boolean[] columnEditables = new boolean[] {
+					false, false, false, false, false, false, false
+				};
+				public boolean isCellEditable(int row, int column) {
+					return columnEditables[column];
+				}
+			};
 	}
 
 }

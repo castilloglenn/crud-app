@@ -131,8 +131,42 @@ public class Database {
 		return -1;
 	}
 	
-	public ArrayList[][] fetchAll() {
-		// TODO
+	public Object[][] fetchAll() {
+		try {
+			PreparedStatement countAll = con.prepareStatement(
+				"SELECT COUNT(product_id) FROM " + TABLE_NAME + ";"
+			);
+			ResultSet count = countAll.executeQuery();
+			count.next();
+			int size = count.getInt(1);
+			
+			PreparedStatement fetchAll = con.prepareStatement(
+				"SELECT * FROM " + TABLE_NAME + ";",
+				ResultSet.TYPE_SCROLL_INSENSITIVE,
+				ResultSet.CONCUR_READ_ONLY
+			);
+			
+			ResultSet datas = fetchAll.executeQuery();
+			Object[][] convertedList = new Object[size][7];
+			
+			int index = 0;
+			while (datas.next()) {
+				Object[] row = new Object[7];
+				row[0] = datas.getLong(1);
+				row[1] = datas.getString(2);
+				row[2] = datas.getDouble(3);
+				row[3] = datas.getString(4);
+				row[4] = datas.getString(5);
+				row[5] = datas.getDouble(6);
+				row[6] = datas.getDouble(7);
+				convertedList[index] = row;
+				index++;
+			}
+			
+			return convertedList;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return null;
 	}
 	
