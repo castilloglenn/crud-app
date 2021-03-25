@@ -16,8 +16,6 @@ import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.JScrollBar;
-import javax.swing.SwingConstants;
 import javax.swing.JScrollPane;
 import javax.swing.SpringLayout;
 import java.awt.Dimension;
@@ -28,10 +26,16 @@ import javax.swing.UIManager;
 import javax.swing.JList;
 import javax.swing.JComboBox;
 import javax.swing.AbstractListModel;
+import javax.swing.DefaultComboBoxModel;
 
 public class Main {
 	
 	private final String APP_NAME = "Product Inventory | Java CRUD | Allen Glenn E. Castillo";
+	private final String[] COLUMNS = {
+		"Product ID", "Category", "Quantity", "Unit", 
+		"Product Name", "Purchase Value", "Sell Value"
+	};
+	
 	private ImageIcon icon = new ImageIcon("images/chest.png");
 	
 	private JFrame frame;
@@ -40,6 +44,7 @@ public class Main {
 	private JTextField searchField;
 	
 	private Database db;
+	private SystemUtility su;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -56,9 +61,11 @@ public class Main {
 
 	public Main() {
 		db = new Database();
+		su = new SystemUtility(db);
 		initialize();
 	}
 
+	@SuppressWarnings("serial")
 	private void initialize() {
 		frame = new JFrame();
 		frame.setMinimumSize(new Dimension(600, 400));
@@ -100,11 +107,15 @@ public class Main {
 		table = new JTable(30, 7);
 		table.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		table.setModel(new DefaultTableModel(
-			new Object[][] {
-			},
-			new String[] {
+			null, COLUMNS
+		) {
+			boolean[] columnEditables = new boolean[] {
+				false, false, false, false, false, false, false
+			};
+			public boolean isCellEditable(int row, int column) {
+				return columnEditables[column];
 			}
-		));
+		});
 		scrollPane.setViewportView(table);
 		
 		JPanel buttonsPanel = new JPanel();
@@ -164,41 +175,57 @@ public class Main {
 		searchField.setColumns(10);
 		
 		JButton submitButton = new JButton("SUBMIT");
+		submitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
 		sl_panel.putConstraint(SpringLayout.NORTH, submitButton, 7, SpringLayout.SOUTH, title);
 		sl_panel.putConstraint(SpringLayout.WEST, submitButton, 467, SpringLayout.WEST, panel);
 		sl_panel.putConstraint(SpringLayout.EAST, submitButton, 88, SpringLayout.EAST, searchField);
 		submitButton.setFont(new Font("Tahoma", Font.BOLD, 11));
 		panel.add(submitButton);
 		
-		JComboBox categories = new JComboBox();
+		JComboBox<String> categories = new JComboBox<String>();
+		categories.setModel(new DefaultComboBoxModel<String>(
+				new String[] {
+						"-- All Columns --", "Product ID", "Category", 
+						"Quantity", "Unit", "Product Name", "Purchase Value", "Sell Value"
+				}));
 		sl_panel.putConstraint(SpringLayout.NORTH, categories, -2, SpringLayout.NORTH, searchForLabel);
 		sl_panel.putConstraint(SpringLayout.WEST, categories, 6, SpringLayout.EAST, searchForLabel);
 		sl_panel.putConstraint(SpringLayout.SOUTH, categories, 2, SpringLayout.SOUTH, searchForLabel);
 		sl_panel.putConstraint(SpringLayout.EAST, categories, 368, SpringLayout.EAST, searchForLabel);
 		panel.add(categories);
 		
-		JComboBox sortByColumn = new JComboBox();
+		JComboBox<String> sortByColumn = new JComboBox<String>();
+		sortByColumn.setModel(new DefaultComboBoxModel<String>(
+				new String[] {
+						"-- Default --", "Product ID", "Category", "Quantity", 
+						"Unit", "Product Name", "Purchase Value", "Sell Value"
+				}));
 		sl_panel.putConstraint(SpringLayout.NORTH, sortByColumn, -2, SpringLayout.NORTH, orderByLabel);
 		sl_panel.putConstraint(SpringLayout.WEST, sortByColumn, 6, SpringLayout.EAST, orderByLabel);
 		sl_panel.putConstraint(SpringLayout.SOUTH, sortByColumn, 2, SpringLayout.SOUTH, orderByLabel);
 		sl_panel.putConstraint(SpringLayout.EAST, sortByColumn, 384, SpringLayout.EAST, orderByLabel);
 		panel.add(sortByColumn);
 		
-		JList sortDirection = new JList();
+		JList<String> sortDirection = new JList<String>();
 		sl_panel.putConstraint(SpringLayout.NORTH, sortDirection, 71, SpringLayout.NORTH, panel);
 		sl_panel.putConstraint(SpringLayout.EAST, sortDirection, 0, SpringLayout.EAST, submitButton);
 		sl_panel.putConstraint(SpringLayout.SOUTH, submitButton, -4, SpringLayout.NORTH, sortDirection);
 		sl_panel.putConstraint(SpringLayout.WEST, sortDirection, 6, SpringLayout.EAST, categories);
 		sl_panel.putConstraint(SpringLayout.SOUTH, sortDirection, 0, SpringLayout.SOUTH, sortByColumn);
-		sortDirection.setModel(new AbstractListModel() {
+		sortDirection.setModel(new AbstractListModel<String>() {
 			String[] values = new String[] {"ASCENDING", "DESCENDING"};
 			public int getSize() {
 				return values.length;
 			}
-			public Object getElementAt(int index) {
+			public String getElementAt(int index) {
 				return values[index];
 			}
 		});
+		sortDirection.setSelectedIndex(0);
 		panel.add(sortDirection);
 	}
 }

@@ -1,7 +1,5 @@
 import java.sql.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+import java.util.ArrayList;
 
 public class Database {
 	
@@ -31,11 +29,11 @@ public class Database {
 			createDatabase();
 			createTable();
 //			insertData(
-//				2147483647,
+//				4210330002L,
 //				"Human Trafficking",
 //				1.0,
 //				"human",
-//				"Glenn E. Castillo",
+//				"AB Son Goku",
 //				99999.99,
 //				99999.99
 //			);
@@ -44,14 +42,6 @@ public class Database {
 //				new String[] {"name", "purchase_value"},
 //				new Object[] {"Diego Fuego", 69420.88}
 //			);
-//			=====THIS WILL INCLUDE IN SEPARATE CLASS NAMED UTILITY========
-//			Calendar c = Calendar.getInstance();
-//			long millis = c.getTimeInMillis();
-//			DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss:SSS Z");
-//			Date d = new Date(millis);
-//			System.out.println(millis);
-//			System.out.println(df.format(d));
-			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -120,6 +110,30 @@ public class Database {
 		}
 		
 		return (totalUpdated == columns.length);
+	}
+	
+	public void deleteData() {
+		// TO-DO
+	}
+	
+	public long fetchLastID() {
+		try {
+			PreparedStatement fetchMax = con.prepareStatement(
+				"SELECT MAX(product_id) FROM " + TABLE_NAME + ";"
+			);
+			
+			ResultSet pid = fetchMax.executeQuery();
+			pid.next();
+			if (pid.getLong(1) != 0) return pid.getLong(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public ArrayList[][] fetchAll() {
+		// TODO
+		return null;
 	}
 	
 }
