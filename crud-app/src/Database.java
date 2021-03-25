@@ -1,4 +1,7 @@
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 
 public class Database {
 	
@@ -9,7 +12,7 @@ public class Database {
 	private final String DATABASE_NAME = "inventory";
 	private final String TABLE_NAME = "product";
 	private final String COLUMNS = 
-		"product_id int PRIMARY KEY," +
+		"product_id BIGINT PRIMARY KEY," +
 		"category VARCHAR(255) NOT NULL," +
 		"quantity DOUBLE(8, 2) NOT NULL," +
 		"uom VARCHAR(255) DEFAULT \"piece(s)\"," +
@@ -28,19 +31,27 @@ public class Database {
 			createDatabase();
 			createTable();
 //			insertData(
-//				201910428,
+//				2147483647,
 //				"Human Trafficking",
 //				1.0,
 //				"human",
-//				"Allen Glenn E. Castillo",
+//				"Glenn E. Castillo",
 //				99999.99,
 //				99999.99
 //			);
-			updateData(
-				201910428,
-				new String[] {"name", "purchase_value"},
-				new Object[] {"Diego Fuego", 69420.88}
-			);
+//			updateData(
+//				201910428,
+//				new String[] {"name", "purchase_value"},
+//				new Object[] {"Diego Fuego", 69420.88}
+//			);
+//			=====THIS WILL INCLUDE IN SEPARATE CLASS NAMED UTILITY========
+//			Calendar c = Calendar.getInstance();
+//			long millis = c.getTimeInMillis();
+//			DateFormat df = new SimpleDateFormat("dd MMM yyyy HH:mm:ss:SSS Z");
+//			Date d = new Date(millis);
+//			System.out.println(millis);
+//			System.out.println(df.format(d));
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -56,13 +67,13 @@ public class Database {
 	}
 	
 	// This method will return -1 in some cases that an error might occur within the database.
-	public int insertData(int product_id, String category, double quantity, 
+	public int insertData(long product_id, String category, double quantity, 
 			String uom, String name, double purchase_value, double sell_value) {
 		try {
 			PreparedStatement insert = con.prepareStatement(
 				"INSERT INTO " + TABLE_NAME +
 				" VALUES (?, ?, ?, ?, ?, ?, ?);");
-			insert.setInt(1, product_id);
+			insert.setLong(1, product_id);
 			insert.setString(2, category);
 			insert.setDouble(3, quantity);
 			insert.setString(4, uom);
@@ -77,7 +88,7 @@ public class Database {
 	}
 	
 	// Returns false if there are inconsistencies within the argument's length.
-	public boolean updateData(int product_id, String[] columns, Object[] datas) {
+	public boolean updateData(long product_id, String[] columns, Object[] datas) {
 		if (columns.length != datas.length) return false;
 		
 		int totalUpdated = 0;
@@ -99,7 +110,7 @@ public class Database {
 						break;
 				}
 				
-				updateOne.setInt(2, product_id);
+				updateOne.setLong(2, product_id);
 				updateOne.executeUpdate();
 				totalUpdated++;
 			} catch (SQLException e) {
