@@ -27,6 +27,20 @@ public class Database {
 			stmt = con.createStatement();
 			createDatabase();
 			createTable();
+//			insertData(
+//				201910428,
+//				"Human Trafficking",
+//				1.0,
+//				"human",
+//				"Allen Glenn E. Castillo",
+//				99999.99,
+//				99999.99
+//			);
+			updateData(
+				201910428,
+				new String[] {"name", "purchase_value"},
+				new Object[] {"Diego Fuego", 69420.88}
+			);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -47,7 +61,7 @@ public class Database {
 		try {
 			PreparedStatement insert = con.prepareStatement(
 				"INSERT INTO " + TABLE_NAME +
-				"VALUES (?, ?, ?, ?, ?, ?, ?);");
+				" VALUES (?, ?, ?, ?, ?, ?, ?);");
 			insert.setInt(1, product_id);
 			insert.setString(2, category);
 			insert.setDouble(3, quantity);
@@ -60,6 +74,41 @@ public class Database {
 			e.printStackTrace();
 			return -1;
 		}
+	}
+	
+	// Returns false if there are inconsistencies within the argument's length.
+	public boolean updateData(int product_id, String[] columns, Object[] datas) {
+		if (columns.length != datas.length) return false;
+		
+		int totalUpdated = 0;
+		for (int index = 0; index < columns.length; index++) {
+			try {
+				PreparedStatement updateOne = con.prepareStatement(
+					String.format(
+						"UPDATE %s"
+						+ " SET %s = ?"
+						+ " WHERE product_id = ?;"
+					, TABLE_NAME, columns[index]));
+				
+				switch (columns[index]) {
+					case "category": case "uom": case "name":
+						updateOne.setString(1, datas[index].toString());
+						break;
+					case "quantity": case "purchase_value": case "sell_value":
+						updateOne.setDouble(1, Double.parseDouble(datas[index].toString()));
+						break;
+				}
+				
+				updateOne.setInt(2, product_id);
+				updateOne.executeUpdate();
+				totalUpdated++;
+			} catch (SQLException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		
+		return (totalUpdated == columns.length);
 	}
 	
 }

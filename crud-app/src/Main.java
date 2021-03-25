@@ -37,7 +37,7 @@ public class Main {
 	private JFrame frame;
 	private JScrollPane scrollPane;
 	private JTable table;
-	private JTextField textField;
+	private JTextField searchField;
 	
 	private Database db;
 
@@ -132,65 +132,65 @@ public class Main {
 		deleteButton.setFont(new Font("Tahoma", Font.BOLD, 11));
 		buttonsPanel.add(deleteButton);
 		
-		JLabel lblNewLabel = new JLabel("SEARCH:");
-		sl_panel.putConstraint(SpringLayout.NORTH, lblNewLabel, 10, SpringLayout.SOUTH, title);
-		sl_panel.putConstraint(SpringLayout.WEST, lblNewLabel, 10, SpringLayout.WEST, panel);
-		lblNewLabel.setForeground(Color.WHITE);
-		lblNewLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
-		panel.add(lblNewLabel);
+		JLabel searchLabel = new JLabel("SEARCH:");
+		sl_panel.putConstraint(SpringLayout.NORTH, searchLabel, 10, SpringLayout.SOUTH, title);
+		sl_panel.putConstraint(SpringLayout.WEST, searchLabel, 10, SpringLayout.WEST, panel);
+		searchLabel.setForeground(Color.WHITE);
+		searchLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+		panel.add(searchLabel);
 		
-		JLabel lblSearchFor = new JLabel("SEARCH FOR:");
-		sl_panel.putConstraint(SpringLayout.NORTH, lblSearchFor, 65, SpringLayout.NORTH, panel);
-		sl_panel.putConstraint(SpringLayout.SOUTH, lblNewLabel, -10, SpringLayout.NORTH, lblSearchFor);
-		sl_panel.putConstraint(SpringLayout.WEST, lblSearchFor, 10, SpringLayout.WEST, panel);
-		lblSearchFor.setForeground(Color.WHITE);
-		lblSearchFor.setFont(new Font("Tahoma", Font.BOLD, 12));
-		panel.add(lblSearchFor);
+		JLabel searchForLabel = new JLabel("SEARCH FOR:");
+		sl_panel.putConstraint(SpringLayout.NORTH, searchForLabel, 65, SpringLayout.NORTH, panel);
+		sl_panel.putConstraint(SpringLayout.SOUTH, searchLabel, -10, SpringLayout.NORTH, searchForLabel);
+		sl_panel.putConstraint(SpringLayout.WEST, searchForLabel, 10, SpringLayout.WEST, panel);
+		searchForLabel.setForeground(Color.WHITE);
+		searchForLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+		panel.add(searchForLabel);
 		
-		JLabel lblOrderBy = new JLabel("ORDER BY:");
-		sl_panel.putConstraint(SpringLayout.NORTH, lblOrderBy, 10, SpringLayout.SOUTH, lblSearchFor);
-		sl_panel.putConstraint(SpringLayout.NORTH, scrollPane, 10, SpringLayout.SOUTH, lblOrderBy);
-		sl_panel.putConstraint(SpringLayout.WEST, lblOrderBy, 10, SpringLayout.WEST, panel);
-		lblOrderBy.setForeground(Color.WHITE);
-		lblOrderBy.setFont(new Font("Tahoma", Font.BOLD, 12));
-		panel.add(lblOrderBy);
+		JLabel orderByLabel = new JLabel("ORDER BY:");
+		sl_panel.putConstraint(SpringLayout.NORTH, orderByLabel, 10, SpringLayout.SOUTH, searchForLabel);
+		sl_panel.putConstraint(SpringLayout.NORTH, scrollPane, 10, SpringLayout.SOUTH, orderByLabel);
+		sl_panel.putConstraint(SpringLayout.WEST, orderByLabel, 10, SpringLayout.WEST, panel);
+		orderByLabel.setForeground(Color.WHITE);
+		orderByLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
+		panel.add(orderByLabel);
 		
-		textField = new JTextField();
-		sl_panel.putConstraint(SpringLayout.NORTH, textField, -2, SpringLayout.NORTH, lblNewLabel);
-		sl_panel.putConstraint(SpringLayout.WEST, textField, 6, SpringLayout.EAST, lblNewLabel);
-		sl_panel.putConstraint(SpringLayout.SOUTH, textField, 2, SpringLayout.SOUTH, lblNewLabel);
-		sl_panel.putConstraint(SpringLayout.EAST, textField, -100, SpringLayout.EAST, panel);
-		panel.add(textField);
-		textField.setColumns(10);
+		searchField = new JTextField();
+		sl_panel.putConstraint(SpringLayout.NORTH, searchField, -2, SpringLayout.NORTH, searchLabel);
+		sl_panel.putConstraint(SpringLayout.WEST, searchField, 6, SpringLayout.EAST, searchLabel);
+		sl_panel.putConstraint(SpringLayout.SOUTH, searchField, 2, SpringLayout.SOUTH, searchLabel);
+		sl_panel.putConstraint(SpringLayout.EAST, searchField, 398, SpringLayout.EAST, searchLabel);
+		panel.add(searchField);
+		searchField.setColumns(10);
 		
-		JButton btnNewButton = new JButton("SUBMIT");
-		sl_panel.putConstraint(SpringLayout.NORTH, btnNewButton, -1, SpringLayout.NORTH, textField);
-		sl_panel.putConstraint(SpringLayout.WEST, btnNewButton, 6, SpringLayout.EAST, textField);
-		sl_panel.putConstraint(SpringLayout.SOUTH, btnNewButton, 10, SpringLayout.SOUTH, textField);
-		sl_panel.putConstraint(SpringLayout.EAST, btnNewButton, -10, SpringLayout.EAST, panel);
-		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 11));
-		panel.add(btnNewButton);
+		JButton submitButton = new JButton("SUBMIT");
+		sl_panel.putConstraint(SpringLayout.NORTH, submitButton, 7, SpringLayout.SOUTH, title);
+		sl_panel.putConstraint(SpringLayout.WEST, submitButton, 467, SpringLayout.WEST, panel);
+		sl_panel.putConstraint(SpringLayout.EAST, submitButton, 88, SpringLayout.EAST, searchField);
+		submitButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		panel.add(submitButton);
 		
-		JComboBox comboBox = new JComboBox();
-		sl_panel.putConstraint(SpringLayout.NORTH, comboBox, -2, SpringLayout.NORTH, lblSearchFor);
-		sl_panel.putConstraint(SpringLayout.WEST, comboBox, 6, SpringLayout.EAST, lblSearchFor);
-		sl_panel.putConstraint(SpringLayout.SOUTH, comboBox, 2, SpringLayout.SOUTH, lblSearchFor);
-		sl_panel.putConstraint(SpringLayout.EAST, comboBox, -100, SpringLayout.EAST, panel);
-		panel.add(comboBox);
+		JComboBox categories = new JComboBox();
+		sl_panel.putConstraint(SpringLayout.NORTH, categories, -2, SpringLayout.NORTH, searchForLabel);
+		sl_panel.putConstraint(SpringLayout.WEST, categories, 6, SpringLayout.EAST, searchForLabel);
+		sl_panel.putConstraint(SpringLayout.SOUTH, categories, 2, SpringLayout.SOUTH, searchForLabel);
+		sl_panel.putConstraint(SpringLayout.EAST, categories, 368, SpringLayout.EAST, searchForLabel);
+		panel.add(categories);
 		
-		JComboBox comboBox_1 = new JComboBox();
-		sl_panel.putConstraint(SpringLayout.NORTH, comboBox_1, -2, SpringLayout.NORTH, lblOrderBy);
-		sl_panel.putConstraint(SpringLayout.WEST, comboBox_1, 6, SpringLayout.EAST, lblOrderBy);
-		sl_panel.putConstraint(SpringLayout.SOUTH, comboBox_1, 2, SpringLayout.SOUTH, lblOrderBy);
-		sl_panel.putConstraint(SpringLayout.EAST, comboBox_1, -100, SpringLayout.EAST, panel);
-		panel.add(comboBox_1);
+		JComboBox sortByColumn = new JComboBox();
+		sl_panel.putConstraint(SpringLayout.NORTH, sortByColumn, -2, SpringLayout.NORTH, orderByLabel);
+		sl_panel.putConstraint(SpringLayout.WEST, sortByColumn, 6, SpringLayout.EAST, orderByLabel);
+		sl_panel.putConstraint(SpringLayout.SOUTH, sortByColumn, 2, SpringLayout.SOUTH, orderByLabel);
+		sl_panel.putConstraint(SpringLayout.EAST, sortByColumn, 384, SpringLayout.EAST, orderByLabel);
+		panel.add(sortByColumn);
 		
-		JList list = new JList();
-		sl_panel.putConstraint(SpringLayout.NORTH, list, 4, SpringLayout.SOUTH, btnNewButton);
-		sl_panel.putConstraint(SpringLayout.WEST, list, 6, SpringLayout.EAST, comboBox);
-		sl_panel.putConstraint(SpringLayout.SOUTH, list, 0, SpringLayout.SOUTH, comboBox_1);
-		sl_panel.putConstraint(SpringLayout.EAST, list, -10, SpringLayout.EAST, panel);
-		list.setModel(new AbstractListModel() {
+		JList sortDirection = new JList();
+		sl_panel.putConstraint(SpringLayout.NORTH, sortDirection, 71, SpringLayout.NORTH, panel);
+		sl_panel.putConstraint(SpringLayout.EAST, sortDirection, 0, SpringLayout.EAST, submitButton);
+		sl_panel.putConstraint(SpringLayout.SOUTH, submitButton, -4, SpringLayout.NORTH, sortDirection);
+		sl_panel.putConstraint(SpringLayout.WEST, sortDirection, 6, SpringLayout.EAST, categories);
+		sl_panel.putConstraint(SpringLayout.SOUTH, sortDirection, 0, SpringLayout.SOUTH, sortByColumn);
+		sortDirection.setModel(new AbstractListModel() {
 			String[] values = new String[] {"ASCENDING", "DESCENDING"};
 			public int getSize() {
 				return values.length;
@@ -199,6 +199,6 @@ public class Main {
 				return values[index];
 			}
 		});
-		panel.add(list);
+		panel.add(sortDirection);
 	}
 }
