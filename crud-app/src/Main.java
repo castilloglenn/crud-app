@@ -1,10 +1,11 @@
 import java.awt.EventQueue;
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -15,18 +16,24 @@ import javax.swing.border.BevelBorder;
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.JButton;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.JScrollPane;
 import javax.swing.SpringLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.GridLayout;
-import javax.swing.UIManager;
 import javax.swing.JList;
 import javax.swing.JComboBox;
 import javax.swing.AbstractListModel;
 import javax.swing.DefaultComboBoxModel;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+
+import javax.swing.ListSelectionModel;
+import javax.swing.JPopupMenu;
+import java.awt.Component;
+import javax.swing.JMenuItem;
 
 public class Main {
 	
@@ -72,7 +79,7 @@ public class Main {
 		frame.setTitle(APP_NAME);
 		frame.getContentPane().setBackground(new Color(51, 51, 51));
 		frame.setIconImage(icon.getImage());
-		frame.setSize(600, 400);
+		frame.setSize(600, 600);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
 		SpringLayout springLayout = new SpringLayout();
@@ -83,7 +90,7 @@ public class Main {
 		springLayout.putConstraint(SpringLayout.WEST, panel, 10, SpringLayout.WEST, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, panel, -11, SpringLayout.SOUTH, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, panel, -10, SpringLayout.EAST, frame.getContentPane());
-		panel.setBackground(new Color(45, 65, 65));
+		panel.setBackground(new Color(65, 65, 75));
 		panel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		frame.getContentPane().add(panel);
 		SpringLayout sl_panel = new SpringLayout();
@@ -93,7 +100,7 @@ public class Main {
 		sl_panel.putConstraint(SpringLayout.NORTH, title, 10, SpringLayout.NORTH, panel);
 		sl_panel.putConstraint(SpringLayout.WEST, title, 10, SpringLayout.WEST, panel);
 		sl_panel.putConstraint(SpringLayout.SOUTH, title, 30, SpringLayout.NORTH, panel);
-		sl_panel.putConstraint(SpringLayout.EAST, title, -10, SpringLayout.EAST, panel);
+		sl_panel.putConstraint(SpringLayout.EAST, title, 235, SpringLayout.WEST, panel);
 		title.setFont(new Font("Tahoma", Font.BOLD, 20));
 		title.setForeground(Color.WHITE);
 		panel.add(title);
@@ -105,18 +112,25 @@ public class Main {
 		panel.add(scrollPane);
 		
 		table = new JTable(30, 7);
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		table.setRowHeight(20);
 		table.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		table.setModel(new DefaultTableModel(
-			null, COLUMNS
-		) {
-			boolean[] columnEditables = new boolean[] {
-				false, false, false, false, false, false, false
-			};
-			public boolean isCellEditable(int row, int column) {
-				return columnEditables[column];
+		table.setModel(su.generateTable(db.fetchAll(), COLUMNS));
+		scrollPane.setViewportView(table);
+		
+		JPopupMenu tablePopup = new JPopupMenu();
+		addPopup(table, tablePopup);
+		
+		JMenuItem popupCopy = new JMenuItem("Copy Cell");
+		popupCopy.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				String text = table.getValueAt(table.getSelectedRow(), table.getSelectedColumn()).toString();
+				StringSelection ss = new StringSelection(text);
+				Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+				cb.setContents(ss, null);
 			}
 		});
-		scrollPane.setViewportView(table);
+		tablePopup.add(popupCopy);
 		
 		JPanel buttonsPanel = new JPanel();
 		sl_panel.putConstraint(SpringLayout.SOUTH, scrollPane, -10, SpringLayout.NORTH, buttonsPanel);
@@ -126,33 +140,51 @@ public class Main {
 		buttonsPanel.setBackground(new Color(45, 65, 65));
 		sl_panel.putConstraint(SpringLayout.WEST, buttonsPanel, 10, SpringLayout.WEST, panel);
 		panel.add(buttonsPanel);
-		buttonsPanel.setLayout(new GridLayout(1, 0, 0, 0));
+		buttonsPanel.setLayout(new GridLayout(1, 0, 10, 0));
 		
 		JButton insertButton = new JButton("INSERT PRODUCT");
+		insertButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Insert Form JFrame
+				
+			}
+		});
 		insertButton.setBackground(new Color(255, 255, 255));
 		insertButton.setFont(new Font("Tahoma", Font.BOLD, 11));
 		buttonsPanel.add(insertButton);
 		
 		JButton updateButton = new JButton("UPDATE PRODUCT");
+		updateButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Update Form JFrame
+				
+			}
+		});
 		updateButton.setBackground(new Color(255, 255, 255));
 		updateButton.setFont(new Font("Tahoma", Font.BOLD, 11));
 		buttonsPanel.add(updateButton);
 		
 		JButton deleteButton = new JButton("DELETE PRODUCT");
+		deleteButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// Delete Form JFrame
+				
+			}
+		});
 		deleteButton.setBackground(new Color(255, 255, 255));
 		deleteButton.setFont(new Font("Tahoma", Font.BOLD, 11));
 		buttonsPanel.add(deleteButton);
 		
 		JLabel searchLabel = new JLabel("SEARCH:");
-		sl_panel.putConstraint(SpringLayout.NORTH, searchLabel, 10, SpringLayout.SOUTH, title);
+		sl_panel.putConstraint(SpringLayout.NORTH, searchLabel, 8, SpringLayout.SOUTH, title);
 		sl_panel.putConstraint(SpringLayout.WEST, searchLabel, 10, SpringLayout.WEST, panel);
 		searchLabel.setForeground(Color.WHITE);
 		searchLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
 		panel.add(searchLabel);
 		
 		JLabel searchForLabel = new JLabel("SEARCH FOR:");
-		sl_panel.putConstraint(SpringLayout.NORTH, searchForLabel, 65, SpringLayout.NORTH, panel);
 		sl_panel.putConstraint(SpringLayout.SOUTH, searchLabel, -10, SpringLayout.NORTH, searchForLabel);
+		sl_panel.putConstraint(SpringLayout.NORTH, searchForLabel, 65, SpringLayout.NORTH, panel);
 		sl_panel.putConstraint(SpringLayout.WEST, searchForLabel, 10, SpringLayout.WEST, panel);
 		searchForLabel.setForeground(Color.WHITE);
 		searchForLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
@@ -175,23 +207,43 @@ public class Main {
 		searchField.setColumns(10);
 		
 		JButton submitButton = new JButton("SUBMIT");
+		sl_panel.putConstraint(SpringLayout.NORTH, submitButton, 35, SpringLayout.NORTH, panel);
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// initially generate a select * command and paste to the JTable
-				table.setModel(su.generateTable(db.fetchAll(), COLUMNS));
+				if (searchField.getText().isBlank())
+					table.setModel(su.generateTable(db.fetchAll(), COLUMNS));
+				
 			}
 		});
-		sl_panel.putConstraint(SpringLayout.NORTH, submitButton, 7, SpringLayout.SOUTH, title);
 		sl_panel.putConstraint(SpringLayout.WEST, submitButton, 467, SpringLayout.WEST, panel);
 		sl_panel.putConstraint(SpringLayout.EAST, submitButton, 88, SpringLayout.EAST, searchField);
+		
+		JPopupMenu popupMenu = new JPopupMenu();
+		addPopup(searchField, popupMenu);
+		
+		JMenuItem paste = new JMenuItem("Paste");
+		paste.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+				Transferable t = cb.getContents(null);
+				if (t != null && t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+					try {
+						searchField.setText((String) t.getTransferData(DataFlavor.stringFlavor));
+					} catch (UnsupportedFlavorException | IOException e1) {
+						e1.printStackTrace();
+					}
+				}
+			}
+		});
+		popupMenu.add(paste);
 		submitButton.setFont(new Font("Tahoma", Font.BOLD, 11));
 		panel.add(submitButton);
 		
 		JComboBox<String> categories = new JComboBox<String>();
 		categories.setModel(new DefaultComboBoxModel<String>(
 				new String[] {
-						"-- All Columns --", "Product ID", "Category", 
-						"Quantity", "Unit", "Product Name", "Purchase Value", "Sell Value"
+						"-- All Columns --", COLUMNS[0], COLUMNS[1], 
+						COLUMNS[2], COLUMNS[3], COLUMNS[4], COLUMNS[5], COLUMNS[6]
 				}));
 		sl_panel.putConstraint(SpringLayout.NORTH, categories, -2, SpringLayout.NORTH, searchForLabel);
 		sl_panel.putConstraint(SpringLayout.WEST, categories, 6, SpringLayout.EAST, searchForLabel);
@@ -202,8 +254,8 @@ public class Main {
 		JComboBox<String> sortByColumn = new JComboBox<String>();
 		sortByColumn.setModel(new DefaultComboBoxModel<String>(
 				new String[] {
-						"-- Default --", "Product ID", "Category", "Quantity", 
-						"Unit", "Product Name", "Purchase Value", "Sell Value"
+						"-- Default --", COLUMNS[0], COLUMNS[1], 
+						COLUMNS[2], COLUMNS[3], COLUMNS[4], COLUMNS[5], COLUMNS[6]
 				}));
 		sl_panel.putConstraint(SpringLayout.NORTH, sortByColumn, -2, SpringLayout.NORTH, orderByLabel);
 		sl_panel.putConstraint(SpringLayout.WEST, sortByColumn, 6, SpringLayout.EAST, orderByLabel);
@@ -212,9 +264,9 @@ public class Main {
 		panel.add(sortByColumn);
 		
 		JList<String> sortDirection = new JList<String>();
+		sl_panel.putConstraint(SpringLayout.SOUTH, submitButton, -4, SpringLayout.NORTH, sortDirection);
 		sl_panel.putConstraint(SpringLayout.NORTH, sortDirection, 71, SpringLayout.NORTH, panel);
 		sl_panel.putConstraint(SpringLayout.EAST, sortDirection, 0, SpringLayout.EAST, submitButton);
-		sl_panel.putConstraint(SpringLayout.SOUTH, submitButton, -4, SpringLayout.NORTH, sortDirection);
 		sl_panel.putConstraint(SpringLayout.WEST, sortDirection, 6, SpringLayout.EAST, categories);
 		sl_panel.putConstraint(SpringLayout.SOUTH, sortDirection, 0, SpringLayout.SOUTH, sortByColumn);
 		sortDirection.setModel(new AbstractListModel<String>() {
@@ -228,5 +280,27 @@ public class Main {
 		});
 		sortDirection.setSelectedIndex(0);
 		panel.add(sortDirection);
+	}
+	
+	private void addPopup(Component component, final JPopupMenu popup) {
+		component.addMouseListener(new MouseAdapter() {
+			public void mousePressed(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			public void mouseReleased(MouseEvent e) {
+				if (e.isPopupTrigger()) {
+					showMenu(e);
+				}
+			}
+			private void showMenu(MouseEvent e) {
+				if (component == table && table.getSelectedRow() != -1)
+					popup.show(e.getComponent(), e.getX(), e.getY());
+				else if (component == searchField) {
+					popup.show(e.getComponent(), e.getX(), e.getY());
+				}
+			}
+		});
 	}
 }
