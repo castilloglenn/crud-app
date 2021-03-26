@@ -34,8 +34,6 @@ import javax.swing.ListSelectionModel;
 import javax.swing.JPopupMenu;
 import java.awt.Component;
 import javax.swing.JMenuItem;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowEvent;
 
@@ -146,34 +144,22 @@ public class Main {
 		JButton insertButton = new JButton("NEW PRODUCT");
 		insertButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				InputDialog id = new InputDialog(icon, db, su);
+				new InputDialog(icon, db, su);
 			}
 		});
 		insertButton.setBackground(new Color(255, 255, 255));
 		insertButton.setFont(new Font("Tahoma", Font.BOLD, 11));
 		buttonsPanel.add(insertButton);
 		
-		JButton updateButton = new JButton("UPDATE PRODUCT");
-		updateButton.addActionListener(new ActionListener() {
+		JButton manageButton = new JButton("MANAGE PRODUCT");
+		manageButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Update Form JFrame
-				
+				new ManageDialog(icon, db);
 			}
 		});
-		updateButton.setBackground(new Color(255, 255, 255));
-		updateButton.setFont(new Font("Tahoma", Font.BOLD, 11));
-		buttonsPanel.add(updateButton);
-		
-		JButton deleteButton = new JButton("DELETE PRODUCT");
-		deleteButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// Delete Form JFrame
-				
-			}
-		});
-		deleteButton.setBackground(new Color(255, 255, 255));
-		deleteButton.setFont(new Font("Tahoma", Font.BOLD, 11));
-		buttonsPanel.add(deleteButton);
+		manageButton.setBackground(new Color(255, 255, 255));
+		manageButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		buttonsPanel.add(manageButton);
 		
 		JLabel searchLabel = new JLabel("SEARCH:");
 		sl_panel.putConstraint(SpringLayout.NORTH, searchLabel, 8, SpringLayout.SOUTH, title);

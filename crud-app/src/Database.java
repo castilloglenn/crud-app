@@ -1,6 +1,8 @@
 import java.sql.*;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 public class Database {
 	
 	private final String URL = "jdbc:mysql://localhost/?serverTimezone=UTC";
@@ -28,8 +30,16 @@ public class Database {
 			stmt = con.createStatement();
 			createDatabase();
 			createTable();
+			fetchDataByID(42103225006L);
 		} catch (SQLException e) {
-			e.printStackTrace();
+			JOptionPane.showMessageDialog(
+				null, 
+				"Please open MySQL Server/XAMPP in order to continue.\n"
+				+ "Communications with the server is unreachable.", 
+				"No database found", 
+				JOptionPane.WARNING_MESSAGE
+			);
+			System.exit(0);
 		}
 	}
 	
@@ -98,8 +108,43 @@ public class Database {
 		return (totalUpdated == columns.length);
 	}
 	
-	public void deleteData() {
-		// TO-DO
+	public boolean deleteData(long product_id) {
+		try {
+			PreparedStatement deleteOne = con.prepareStatement(
+				"DELETE FROM " + TABLE_NAME +
+				" WHERE product_id = ?;"
+			);
+			deleteOne.setLong(1, product_id);
+			int isDeleted = deleteOne.executeUpdate();
+			
+			return (isDeleted == 1) ? true : false;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public Object[] fetchDataByID(long product_id) {
+		try {
+			PreparedStatement fetchOne = con.prepareStatement(
+				"SELECT * FROM " + TABLE_NAME +
+				" WHERE product_id = ?;"
+			);
+			fetchOne.setLong(1, product_id);
+			ResultSet data = fetchOne.executeQuery();
+			data.next();
+			return new Object[] {
+				data.getLong(1), data.getString(2),
+				data.getDouble(3), data.getString(4),
+				data.getString(5), data.getDouble(6),
+				data.getDouble(7)
+			};
+		} catch (SQLException e) {
+			// I will skip this exception because I know this will only
+			// produce EmptyResultSet SQLError and I don't need to
+			// handle it.
+		}
+		return null;
 	}
 	
 	public long fetchLastID() {
@@ -152,6 +197,15 @@ public class Database {
 			return convertedList;
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} catch (NullPointerException e) {
+			JOptionPane.showMessageDialog(
+				null, 
+				"Please open MySQL Server/XAMPP in order to continue.\n"
+				+ "Database connection is null.", 
+				"No database found", 
+				JOptionPane.WARNING_MESSAGE
+			);
+			System.exit(0);
 		}
 		return null;
 	}
