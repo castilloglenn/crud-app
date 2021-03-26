@@ -7,6 +7,8 @@ import javax.swing.SpringLayout;
 import javax.swing.JPanel;
 import javax.swing.border.BevelBorder;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -17,22 +19,35 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.JButton;
 import java.awt.GridLayout;
 import javax.swing.JCheckBox;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ChangeEvent;
 
 @SuppressWarnings("serial")
 public class InputDialog extends JDialog {
 	
 	private final String TITLE = "Insert Form | Product Inventory | Allen Glenn E. Castillo";
-	private JTextField productIDField;
+	private String[] categories;
 	
 	private Database db;
 	private SystemUtility su;
-	private JTextField categoryNewField;
+
+	private JTextField productIDField;
+	private JTextField categoryNew;
 	private JTextField uomField;
 	private JTextField nameField;
+	private JCheckBox categoryCheckBox;
+	private JComboBox<String> existingCategory;
+	private JSpinner quantityAmount;
+	private JSpinner purchaseAmount;
+	private JSpinner sellAmount;
 
 	public InputDialog(ImageIcon icon, Database db, SystemUtility su) {
 		this.db = db;
 		this.su = su;
+		
+		categories = db.fetchCategories();
 		
 		setIconImage(icon.getImage());
 		setTitle(TITLE);
@@ -41,7 +56,6 @@ public class InputDialog extends JDialog {
 		setResizable(false);
 		SpringLayout springLayout = new SpringLayout();
 		getContentPane().setLayout(springLayout);
-		
 		
 		JPanel panel = new JPanel();
 		springLayout.putConstraint(SpringLayout.NORTH, panel, 11, SpringLayout.NORTH, getContentPane());
@@ -85,17 +99,17 @@ public class InputDialog extends JDialog {
 		category.setBounds(10, 94, 104, 17);
 		panel.add(category);
 		
-		categoryNewField = new JTextField();
-		categoryNewField.setEditable(false);
-		categoryNewField.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		categoryNewField.setHorizontalAlignment(SwingConstants.TRAILING);
-		categoryNewField.setBounds(142, 121, 212, 17);
-		panel.add(categoryNewField);
-		categoryNewField.setColumns(10);
+		categoryNew = new JTextField();
+		categoryNew.setEditable(false);
+		categoryNew.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		categoryNew.setHorizontalAlignment(SwingConstants.TRAILING);
+		categoryNew.setBounds(142, 121, 212, 17);
+		panel.add(categoryNew);
+		categoryNew.setColumns(10);
 		
-		JComboBox<String> existingCategory = new JComboBox<String>();
+		existingCategory = new JComboBox<String>();
 		existingCategory.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		existingCategory.setModel(new DefaultComboBoxModel<String>(db.fetchCategories()));
+		existingCategory.setModel(new DefaultComboBoxModel<String>(categories));
 		existingCategory.setBounds(124, 93, 230, 17);
 		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
 		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER); // center-aligned items
@@ -109,9 +123,9 @@ public class InputDialog extends JDialog {
 		quantity.setBounds(10, 150, 104, 17);
 		panel.add(quantity);
 		
-		JSpinner quantityAmount = new JSpinner();
+		quantityAmount = new JSpinner();
 		quantityAmount.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		quantityAmount.setModel(new SpinnerNumberModel(0.0, 0.0, 99999.0, 1.0));
+		quantityAmount.setModel(new SpinnerNumberModel(1.0, 1.0, 99999.0, 1.0));
 		quantityAmount.setBounds(124, 150, 230, 17);
 		panel.add(quantityAmount);
 		
@@ -163,8 +177,8 @@ public class InputDialog extends JDialog {
 		purchaseValue.setBounds(10, 229, 104, 28);
 		panel.add(purchaseValue);
 		
-		JSpinner purchaseAmount = new JSpinner();
-		purchaseAmount.setModel(new SpinnerNumberModel(1.0, 0.0, 99999.0, 1.0));
+		purchaseAmount = new JSpinner();
+		purchaseAmount.setModel(new SpinnerNumberModel(1.0, 1.0, 99999.0, 1.0));
 		purchaseAmount.setBounds(124, 233, 230, 18);
 		panel.add(purchaseAmount);
 		
@@ -175,8 +189,8 @@ public class InputDialog extends JDialog {
 		sellValue.setBounds(10, 262, 104, 17);
 		panel.add(sellValue);
 		
-		JSpinner sellAmount = new JSpinner();
-		sellAmount.setModel(new SpinnerNumberModel(1.0, 0.0, 99999.0, 1.0));
+		sellAmount = new JSpinner();
+		sellAmount.setModel(new SpinnerNumberModel(1.0, 1.0, 99999.0, 1.0));
 		sellAmount.setBounds(124, 261, 230, 18);
 		panel.add(sellAmount);
 		
@@ -186,26 +200,40 @@ public class InputDialog extends JDialog {
 		panel.add(panel_1);
 		panel_1.setLayout(new GridLayout(1, 0, 10, 0));
 		
-		JButton btnNewButton = new JButton(
+		JButton insertClearButton = new JButton(
 				"<html>"
 				+ "<p style=\"text-align:center;\">"
 				+ "INSERT NEW PRODUCT AND CLEAR ALL FIELDS"
 				+ "</p>"
 				+ "</html>"
 		);
-		btnNewButton.setBackground(Color.WHITE);
-		btnNewButton.setFont(new Font("Tahoma", Font.BOLD, 11));
-		panel_1.add(btnNewButton);
+		insertClearButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (evaluateFields()) {
+					clearFields();
+				}
+			}
+		});
+		insertClearButton.setBackground(Color.WHITE);
+		insertClearButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		panel_1.add(insertClearButton);
 		
-		JButton btnNewButton_1 = new JButton(
+		JButton insertExitButton = new JButton(
 				"<html>"
 				+ "<p style=\"text-align:center;\">"
 				+ "INSERT NEW PRODUCT AND CLOSE WINDOW"
 				+ "</p>"
 				+ "</html>");
-		btnNewButton_1.setBackground(Color.WHITE);
-		btnNewButton_1.setFont(new Font("Tahoma", Font.BOLD, 11));
-		panel_1.add(btnNewButton_1);
+		insertExitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (evaluateFields()) {
+					dispose();
+				}
+			}
+		});
+		insertExitButton.setBackground(Color.WHITE);
+		insertExitButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		panel_1.add(insertExitButton);
 		
 		JLabel newCategoryLabel = new JLabel(
 				"<html>"
@@ -223,14 +251,110 @@ public class InputDialog extends JDialog {
 		separator_1.setBounds(10, 298, 344, 2);
 		panel.add(separator_1);
 		
-		JCheckBox chckbxNewCheckBox = new JCheckBox("");
-		chckbxNewCheckBox.setBackground(new Color(65, 100, 150));
-		chckbxNewCheckBox.setBounds(120, 121, 25, 17);
-		panel.add(chckbxNewCheckBox);
+		categoryCheckBox = new JCheckBox("");
+		categoryCheckBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (categoryCheckBox.isSelected()) {
+					categoryNew.setEditable(true);
+					existingCategory.setSelectedIndex(-1);
+					existingCategory.setEnabled(false);
+				}
+				if (!categoryCheckBox.isSelected()) {
+					existingCategory.setEnabled(true);
+					existingCategory.setModel(new DefaultComboBoxModel<String>(db.fetchCategories()));
+					existingCategory.setSelectedIndex(0);
+					categoryNew.setText("");
+					categoryNew.setEditable(false);
+				}
+			}
+		});
+		categoryCheckBox.setBackground(new Color(65, 100, 150));
+		categoryCheckBox.setBounds(120, 121, 21, 17);
+		panel.add(categoryCheckBox);
 		
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setModal(true);
 		setVisible(true);
 	}
+	
+	public Object[] getAllFields() {
+		Object[] data = new Object[7];
+		Object[] errors = new Object[2];
+		boolean flagged = false;
+		
+		data[0] = productIDField.getText();
+		if (categoryCheckBox.isSelected()) {
+			String input = categoryNew.getText();
+			data[1] = input;
+			for (String category : categories) {
+				if (input.toLowerCase().equals(category.toLowerCase())) {
+					flagged = true;
+					errors[0] = "• Your new category already exists.";
+				}
+			}
+		} else if (!categoryCheckBox.isSelected()) {
+			data[1] = existingCategory.getSelectedItem().toString();
+		}
+		data[2] = quantityAmount.getValue().toString();
+		String uom = uomField.getText();
+		String name = nameField.getText();
+		if (uom.isBlank()) {
+			data[3] = "piece(s)";
+		} else {
+			data[3] = uom;
+		}
+		if (name.isBlank()) {
+			flagged = true;
+			errors[1] = "• Product name cannot be empty.";
+		}
+		data[4] = name;
+		
+		data[5] = purchaseAmount.getValue();
+		data[6] = sellAmount.getValue();
+			
+		return (flagged) ? errors : data;
+	}
+	
+	public boolean evaluateFields() {
+		Object[] data = getAllFields();
+		if (data.length == 7) {
+			JOptionPane.showMessageDialog(null, "New Product Added! (" + nameField.getText() + ")");
+			db.insertData(
+				Long.parseLong(data[0].toString()),
+				data[1].toString(),
+				Double.parseDouble(data[2].toString()),
+				data[3].toString(),
+				data[4].toString(),
+				Double.parseDouble(data[5].toString()),
+				Double.parseDouble(data[6].toString())
+			);
+			return true;
+		} else if (data.length == 2) {
+			JOptionPane.showMessageDialog(null,
+				String.format("Please check your inputs:\n"
+						+ "%s%s",
+						(data[0] == null) ? data[1].toString() : data[0],
+						(data[0] == null) ? "" : "\n" + data[1])
+			);
+		}
+		return false;
+	}
+	
+	public void clearFields() {
+		productIDField.setText(Long.toString(su.generateProductID()));
+		if (categoryCheckBox.isSelected()) {
+			categoryNew.setText("");
+		} else {
+			categories = db.fetchCategories();
+			existingCategory.setModel(new DefaultComboBoxModel<String>(categories));
+			existingCategory.setSelectedIndex(0);
+		}
+		quantityAmount.setValue(1);
+		uomField.setText("");
+		nameField.setText("");
+		purchaseAmount.setValue(1);
+		sellAmount.setValue(1);
+	}
+	
 }

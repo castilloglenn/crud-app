@@ -34,6 +34,10 @@ import javax.swing.ListSelectionModel;
 import javax.swing.JPopupMenu;
 import java.awt.Component;
 import javax.swing.JMenuItem;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.WindowFocusListener;
+import java.awt.event.WindowEvent;
 
 public class Main {
 	
@@ -276,6 +280,14 @@ public class Main {
 		});
 		sortDirection.setSelectedIndex(0);
 		panel.add(sortDirection);
+		
+
+		frame.addWindowFocusListener(new WindowFocusListener() {
+			public void windowGainedFocus(WindowEvent e) {
+				table.setModel(su.generateTable(db.fetchAll(), COLUMNS));
+			}
+			public void windowLostFocus(WindowEvent e) {}
+		});
 	}
 	
 	private void addPopup(Component component, final JPopupMenu popup) {

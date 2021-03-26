@@ -28,20 +28,6 @@ public class Database {
 			stmt = con.createStatement();
 			createDatabase();
 			createTable();
-//			insertData(
-//				4210330002L,
-//				"Human Trafficking",
-//				1.0,
-//				"human",
-//				"AB Son Goku",
-//				99999.99,
-//				99999.99
-//			);
-//			updateData(
-//				201910428,
-//				new String[] {"name", "purchase_value"},
-//				new Object[] {"Diego Fuego", 69420.88}
-//			);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -174,6 +160,7 @@ public class Database {
 		try {
 			PreparedStatement fetch = con.prepareStatement(
 				"SELECT DISTINCT category FROM " + TABLE_NAME
+				+ " ORDER BY category;"
 			);
 			ResultSet categories = fetch.executeQuery();
 			ArrayList<String> temp = new ArrayList<>();
