@@ -264,8 +264,15 @@ public class ManageDialog extends JDialog {
 						JOptionPane.YES_NO_OPTION,
 						JOptionPane.WARNING_MESSAGE
 				);
+				
 				if (confirmation == 0) {
-					
+					if (db.deleteData(Long.parseLong(productIDField.getText()))) {
+						JOptionPane.showMessageDialog(null, 
+								"Product #" + productIDField.getText() + " has been deleted.\n"
+										+ "Product Name: " + nameField.getText());
+						productIDField.setText("Enter the product ID here");
+						clearAndDisableFields();
+					}
 				}
 			}
 		});
