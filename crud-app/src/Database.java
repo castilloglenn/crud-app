@@ -170,4 +170,23 @@ public class Database {
 		return null;
 	}
 	
+	public String[] fetchCategories() {
+		try {
+			PreparedStatement fetch = con.prepareStatement(
+				"SELECT DISTINCT category FROM " + TABLE_NAME
+			);
+			ResultSet categories = fetch.executeQuery();
+			ArrayList<String> temp = new ArrayList<>();
+			while (categories.next()) {
+				temp.add(categories.getString(1));
+			}
+			if (temp.toArray(new String[0]).length == 0)
+				return new String[] {"--No existing record--"};
+			
+			return temp.toArray(new String[0]);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 }

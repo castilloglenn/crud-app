@@ -142,7 +142,7 @@ public class Main {
 		JButton insertButton = new JButton("NEW PRODUCT");
 		insertButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				InputDialog id = new InputDialog(icon);
+				InputDialog id = new InputDialog(icon, db, su);
 			}
 		});
 		insertButton.setBackground(new Color(255, 255, 255));
