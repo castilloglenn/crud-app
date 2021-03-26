@@ -203,7 +203,7 @@ public class InputDialog extends JDialog {
 		JButton insertClearButton = new JButton(
 				"<html>"
 				+ "<p style=\"text-align:center;\">"
-				+ "INSERT NEW PRODUCT AND CLEAR ALL FIELDS"
+				+ "ADD NEW PRODUCT AND CLEAR ALL FIELDS"
 				+ "</p>"
 				+ "</html>"
 		);
@@ -219,7 +219,7 @@ public class InputDialog extends JDialog {
 		JButton insertExitButton = new JButton(
 				"<html>"
 				+ "<p style=\"text-align:center;\">"
-				+ "INSERT NEW PRODUCT AND CLOSE WINDOW"
+				+ "ADD NEW PRODUCT AND CLOSE WINDOW"
 				+ "</p>"
 				+ "</html>");
 		insertExitButton.addActionListener(new ActionListener() {

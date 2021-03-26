@@ -15,7 +15,7 @@ public class Database {
 		"product_id BIGINT PRIMARY KEY," +
 		"category VARCHAR(255) NOT NULL," +
 		"quantity DOUBLE(8, 2) NOT NULL," +
-		"uom VARCHAR(255) DEFAULT \"piece(s)\"," +
+		"uom VARCHAR(255) NOT NULL," +
 		"name VARCHAR(255) UNIQUE NOT NULL," +
 		"purchase_value DOUBLE(8, 2) NOT NULL," +
 		"sell_value DOUBLE(8, 2) NOT NULL";
