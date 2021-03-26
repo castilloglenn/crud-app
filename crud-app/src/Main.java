@@ -56,12 +56,8 @@ public class Main {
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
-				try {
-					Main window = new Main();
-					window.frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
+				Main window = new Main();
+				window.frame.setVisible(true);
 			}
 		});
 	}
@@ -90,7 +86,7 @@ public class Main {
 		springLayout.putConstraint(SpringLayout.WEST, panel, 10, SpringLayout.WEST, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.SOUTH, panel, -11, SpringLayout.SOUTH, frame.getContentPane());
 		springLayout.putConstraint(SpringLayout.EAST, panel, -10, SpringLayout.EAST, frame.getContentPane());
-		panel.setBackground(new Color(65, 65, 75));
+		panel.setBackground(new Color(65, 100, 150));
 		panel.setBorder(new BevelBorder(BevelBorder.RAISED, null, null, null, null));
 		frame.getContentPane().add(panel);
 		SpringLayout sl_panel = new SpringLayout();
@@ -112,6 +108,7 @@ public class Main {
 		panel.add(scrollPane);
 		
 		table = new JTable(30, 7);
+		table.setBackground(Color.WHITE);
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setRowHeight(20);
 		table.setFont(new Font("Tahoma", Font.PLAIN, 12));
@@ -137,16 +134,15 @@ public class Main {
 		sl_panel.putConstraint(SpringLayout.NORTH, buttonsPanel, -40, SpringLayout.SOUTH, panel);
 		sl_panel.putConstraint(SpringLayout.SOUTH, buttonsPanel, -11, SpringLayout.SOUTH, panel);
 		sl_panel.putConstraint(SpringLayout.EAST, buttonsPanel, -10, SpringLayout.EAST, panel);
-		buttonsPanel.setBackground(new Color(45, 65, 65));
+		buttonsPanel.setBackground(new Color(65, 100, 150));
 		sl_panel.putConstraint(SpringLayout.WEST, buttonsPanel, 10, SpringLayout.WEST, panel);
 		panel.add(buttonsPanel);
 		buttonsPanel.setLayout(new GridLayout(1, 0, 10, 0));
 		
-		JButton insertButton = new JButton("INSERT PRODUCT");
+		JButton insertButton = new JButton("NEW PRODUCT");
 		insertButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				// Insert Form JFrame
-				
+				InputDialog id = new InputDialog(icon);
 			}
 		});
 		insertButton.setBackground(new Color(255, 255, 255));
