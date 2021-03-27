@@ -54,7 +54,6 @@ public class ManageDialog extends JDialog {
 	
 	
 	public ManageDialog(ImageIcon icon, Database db) {
-		setResizable(false);
 		this.db = db;
 
 		categories = db.fetchCategories();
@@ -360,6 +359,7 @@ public class ManageDialog extends JDialog {
 		
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
+		setResizable(false);
 		setModal(true);
 		setVisible(true);
 	}

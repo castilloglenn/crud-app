@@ -51,7 +51,6 @@ public class InputDialog extends JDialog {
 		setTitle(TITLE);
 		getContentPane().setBackground(new Color(51, 51, 51));
 		setSize(400, 435);
-		setResizable(false);
 		SpringLayout springLayout = new SpringLayout();
 		getContentPane().setLayout(springLayout);
 		
@@ -177,7 +176,7 @@ public class InputDialog extends JDialog {
 		
 		purchaseAmount = new JSpinner();
 		purchaseAmount.setFont(new Font("Tahoma", Font.PLAIN, 11));
-		purchaseAmount.setModel(new SpinnerNumberModel(1.0, 1.0, 99999.0, 1.0));
+		purchaseAmount.setModel(new SpinnerNumberModel(1.0, 0.0, 99999.0, 1.0));
 		purchaseAmount.setBounds(124, 233, 230, 18);
 		panel.add(purchaseAmount);
 		
@@ -270,6 +269,7 @@ public class InputDialog extends JDialog {
 		
 		setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		setLocationRelativeTo(null);
+		setResizable(false);
 		setModal(true);
 		setVisible(true);
 	}

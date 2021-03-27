@@ -22,6 +22,7 @@ public class Database {
 	
 	private Connection con;
 	private Statement stmt;
+	private PreparedStatement ps;
 	
 	
 	Database() {
@@ -55,17 +56,17 @@ public class Database {
 	public int insertData(long product_id, String category, double quantity, 
 			String uom, String name, double purchase_value, double sell_value) {
 		try {
-			PreparedStatement insert = con.prepareStatement(
+			ps = con.prepareStatement(
 				"INSERT INTO " + TABLE_NAME +
 				" VALUES (?, ?, ?, ?, ?, ?, ?);");
-			insert.setLong(1, product_id);
-			insert.setString(2, category);
-			insert.setDouble(3, quantity);
-			insert.setString(4, uom);
-			insert.setString(5, name);
-			insert.setDouble(6, purchase_value);
-			insert.setDouble(7, sell_value);
-			return insert.executeUpdate();
+			ps.setLong(1, product_id);
+			ps.setString(2, category);
+			ps.setDouble(3, quantity);
+			ps.setString(4, uom);
+			ps.setString(5, name);
+			ps.setDouble(6, purchase_value);
+			ps.setDouble(7, sell_value);
+			return ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return -1;
@@ -79,7 +80,7 @@ public class Database {
 		int totalUpdated = 0;
 		for (int index = 0; index < columns.length; index++) {
 			try {
-				PreparedStatement updateOne = con.prepareStatement(
+				ps = con.prepareStatement(
 					String.format(
 						"UPDATE %s"
 						+ " SET %s = ?"
@@ -88,15 +89,15 @@ public class Database {
 				
 				switch (columns[index]) {
 					case "category": case "uom": case "name":
-						updateOne.setString(1, datas[index].toString());
+						ps.setString(1, datas[index].toString());
 						break;
 					case "quantity": case "purchase_value": case "sell_value":
-						updateOne.setDouble(1, Double.parseDouble(datas[index].toString()));
+						ps.setDouble(1, Double.parseDouble(datas[index].toString()));
 						break;
 				}
 				
-				updateOne.setLong(2, product_id);
-				updateOne.executeUpdate();
+				ps.setLong(2, product_id);
+				ps.executeUpdate();
 				totalUpdated++;
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -109,12 +110,12 @@ public class Database {
 	
 	public boolean deleteData(long product_id) {
 		try {
-			PreparedStatement deleteOne = con.prepareStatement(
+			ps = con.prepareStatement(
 				"DELETE FROM " + TABLE_NAME +
 				" WHERE product_id = ?;"
 			);
-			deleteOne.setLong(1, product_id);
-			int isDeleted = deleteOne.executeUpdate();
+			ps.setLong(1, product_id);
+			int isDeleted = ps.executeUpdate();
 			
 			return (isDeleted == 1) ? true : false;
 		} catch (SQLException e) {
@@ -125,12 +126,12 @@ public class Database {
 	
 	public Object[] fetchDataByID(long product_id) {
 		try {
-			PreparedStatement fetchOne = con.prepareStatement(
+			ps = con.prepareStatement(
 				"SELECT * FROM " + TABLE_NAME +
 				" WHERE product_id = ?;"
 			);
-			fetchOne.setLong(1, product_id);
-			ResultSet data = fetchOne.executeQuery();
+			ps.setLong(1, product_id);
+			ResultSet data = ps.executeQuery();
 			data.next();
 			return new Object[] {
 				data.getLong(1), data.getString(2),
@@ -148,11 +149,11 @@ public class Database {
 	
 	public long fetchLastID() {
 		try {
-			PreparedStatement fetchMax = con.prepareStatement(
+			ps = con.prepareStatement(
 				"SELECT MAX(product_id) FROM " + TABLE_NAME + ";"
 			);
 			
-			ResultSet pid = fetchMax.executeQuery();
+			ResultSet pid = ps.executeQuery();
 			pid.next();
 			if (pid.getLong(1) != 0) return pid.getLong(1);
 		} catch (SQLException e) {
@@ -163,19 +164,12 @@ public class Database {
 	
 	public Object[][] fetchAll() {
 		try {
-			PreparedStatement countAll = con.prepareStatement(
-				"SELECT COUNT(product_id) FROM " + TABLE_NAME + ";"
-			);
-			ResultSet count = countAll.executeQuery();
-			count.next();
-			int size = count.getInt(1);
-			
-			PreparedStatement fetchAll = con.prepareStatement(
+			ps = con.prepareStatement(
 				"SELECT * FROM " + TABLE_NAME + ";"
 			);
 			
-			ResultSet datas = fetchAll.executeQuery();
-			Object[][] convertedList = new Object[size][7];
+			ResultSet datas = ps.executeQuery();
+			Object[][] convertedList = new Object[fetchTotalCount()][7];
 			
 			int index = 0;
 			while (datas.next()) {
@@ -200,11 +194,11 @@ public class Database {
 	
 	public String[] fetchCategories() {
 		try {
-			PreparedStatement fetch = con.prepareStatement(
+			ps = con.prepareStatement(
 				"SELECT DISTINCT category FROM " + TABLE_NAME
 				+ " ORDER BY category;"
 			);
-			ResultSet categories = fetch.executeQuery();
+			ResultSet categories = ps.executeQuery();
 			ArrayList<String> temp = new ArrayList<>();
 			while (categories.next()) {
 				temp.add(categories.getString(1));
@@ -221,19 +215,7 @@ public class Database {
 	
 	public Object[][] fetchSpecific(String keyword, String column, String columnOrder, String orderVector) {
 		try {
-			PreparedStatement countAll = con.prepareStatement(
-				String.format(
-					"SELECT COUNT(product_id) "
-					+ "FROM " + TABLE_NAME + " "
-					+ "WHERE %s LIKE \"%s\";",
-					column, keyword
-				)
-			);
-			ResultSet count = countAll.executeQuery();
-			count.next();
-			int size = count.getInt(1);
-			
-			PreparedStatement fetchAll = con.prepareStatement(
+			ps = con.prepareStatement(
 				String.format(
 					"SELECT * "
 					+ "FROM " + TABLE_NAME + " "
@@ -242,8 +224,8 @@ public class Database {
 					column, keyword, columnOrder, orderVector
 				)
 			);
-			ResultSet datas = fetchAll.executeQuery();
-			Object[][] convertedList = new Object[size][7];
+			ResultSet datas = ps.executeQuery();
+			Object[][] convertedList = new Object[fetchTotalCount()][7];
 			
 			int index = 0;
 			while (datas.next()) {
@@ -265,4 +247,276 @@ public class Database {
 		}
 		return null;
 	}
+	
+	public int fetchTotalCount() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT COUNT(product_id) FROM " + TABLE_NAME + ";"
+			);
+			ResultSet count = ps.executeQuery();
+			count.next();
+			return count.getInt(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public double fetchPurchaseValueByName(String name) {
+		try {
+			ps = con.prepareStatement(
+				"SELECT purchase_value FROM " + TABLE_NAME
+				+ " WHERE name=?;"
+			);
+			ps.setString(1, name);
+			ResultSet value = ps.executeQuery();
+			if (value.next()) return value.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public double fetchSellValueByName(String name) {
+		try {
+			ps = con.prepareStatement(
+				"SELECT sell_value FROM " + TABLE_NAME
+				+ " WHERE name=?;"
+			);
+			ps.setString(1, name);
+			ResultSet value = ps.executeQuery();
+			if (value.next()) return value.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public String fetchMaxPurchaseValue() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT name FROM " + TABLE_NAME
+				+ " WHERE purchase_value = ("
+					+ "SELECT MAX(purchase_value) "
+					+ "FROM " + TABLE_NAME
+					+ ");"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getString(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String fetchMinPurchaseValue() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT name FROM " + TABLE_NAME
+				+ " WHERE purchase_value = ("
+					+ "SELECT MIN(purchase_value) "
+					+ "FROM " + TABLE_NAME
+					+ ");"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getString(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String fetchMaxSellValue() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT name FROM " + TABLE_NAME
+				+ " WHERE sell_value = ("
+					+ "SELECT MAX(sell_value) "
+					+ "FROM " + TABLE_NAME
+					+ ");"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getString(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String fetchMinSellValue() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT name FROM " + TABLE_NAME
+				+ " WHERE sell_value = ("
+					+ "SELECT MIN(sell_value) "
+					+ "FROM " + TABLE_NAME
+					+ ");"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getString(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String fetchProductMaxStock() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT name FROM " + TABLE_NAME
+				+ " WHERE quantity = ("
+					+ "SELECT MAX(quantity) "
+					+ "FROM " + TABLE_NAME
+					+ ");"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getString(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String fetchProductMinStock() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT name FROM " + TABLE_NAME
+				+ " WHERE quantity = ("
+					+ "SELECT MIN(quantity) "
+					+ "FROM " + TABLE_NAME
+					+ ");"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getString(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public double fetchSumQuantity() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT SUM(quantity) FROM " + TABLE_NAME + ";"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public String fetchCategoryMostProduct() {
+		String[] categories = fetchCategories();
+		if (categories == null) return null;
+		
+		String category = "";
+		int max = 0;
+		
+		for (String c : categories) {
+			try {
+				ps = con.prepareStatement(
+					"SELECT COUNT(product_id) "
+					+ " FROM " + TABLE_NAME
+					+ " WHERE category=?"
+				);
+				ps.setString(1, c);
+				ResultSet candidate = ps.executeQuery();
+				if (candidate.next()) {
+					if (max == 0 || candidate.getInt(1) >= max) {
+						category = c;
+						max = candidate.getInt(1);
+					} 
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return (category == "") ? null : category;
+	}
+	
+	public String fetchCategoryLeastProduct() {
+		String[] categories = fetchCategories();
+		if (categories == null) return null;
+		
+		String category = "";
+		int min = 0;
+		
+		for (String c : categories) {
+			try {
+				ps = con.prepareStatement(
+					"SELECT COUNT(product_id) "
+					+ " FROM " + TABLE_NAME
+					+ " WHERE category=?"
+				);
+				ps.setString(1, c);
+				ResultSet candidate = ps.executeQuery();
+				if (candidate.next()) {
+					if (min == 0 || candidate.getInt(1) <= min) {
+						category = c;
+						min = candidate.getInt(1);
+					} 
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		return (category == "") ? null : category;
+	}
+	
+	public double fetchAveragePurchasePrice() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT AVG(purchase_value) FROM " + TABLE_NAME + ";"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public double fetchAverageSellingPrice() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT AVG(sell_value) FROM " + TABLE_NAME + ";"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public double fetchSumProductPurchase() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT SUM(purchase_value) FROM " + TABLE_NAME + ";"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
+	public double fetchSumProductSell() {
+		try {
+			ps = con.prepareStatement(
+				"SELECT SUM(sell_value) FROM " + TABLE_NAME + ";"
+			);
+			ResultSet name = ps.executeQuery();
+			if (name.next()) return name.getDouble(1);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return -1;
+	}
+	
 }

@@ -36,6 +36,8 @@ import java.awt.Component;
 import javax.swing.JMenuItem;
 import java.awt.event.WindowFocusListener;
 import java.awt.event.WindowEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class Main {
 	
@@ -59,6 +61,7 @@ public class Main {
 	private JComboBox<String> categories;
 	private JComboBox<String> sortByColumn;
 	private JList<String> sortDirection;
+	private JButton submitButton;
 	
 	private Database db;
 	private SystemUtility su;
@@ -169,6 +172,16 @@ public class Main {
 		manageButton.setFont(new Font("Tahoma", Font.BOLD, 11));
 		buttonsPanel.add(manageButton);
 		
+		JButton statisticsButton = new JButton("SHOW STATISTICS");
+		statisticsButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				new StatisticsDialog(icon, db);
+			}
+		});
+		statisticsButton.setFont(new Font("Tahoma", Font.BOLD, 11));
+		statisticsButton.setBackground(Color.WHITE);
+		buttonsPanel.add(statisticsButton);
+		
 		JLabel searchLabel = new JLabel("SEARCH:");
 		sl_panel.putConstraint(SpringLayout.NORTH, searchLabel, 8, SpringLayout.SOUTH, title);
 		sl_panel.putConstraint(SpringLayout.WEST, searchLabel, 10, SpringLayout.WEST, panel);
@@ -185,14 +198,22 @@ public class Main {
 		panel.add(searchForLabel);
 		
 		JLabel orderByLabel = new JLabel("ORDER BY:");
-		sl_panel.putConstraint(SpringLayout.NORTH, orderByLabel, 10, SpringLayout.SOUTH, searchForLabel);
 		sl_panel.putConstraint(SpringLayout.NORTH, scrollPane, 10, SpringLayout.SOUTH, orderByLabel);
+		sl_panel.putConstraint(SpringLayout.NORTH, orderByLabel, 10, SpringLayout.SOUTH, searchForLabel);
 		sl_panel.putConstraint(SpringLayout.WEST, orderByLabel, 10, SpringLayout.WEST, panel);
 		orderByLabel.setForeground(Color.WHITE);
 		orderByLabel.setFont(new Font("Tahoma", Font.BOLD, 12));
 		panel.add(orderByLabel);
 		
 		searchField = new JTextField();
+		searchField.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == 10) {
+					submitButton.doClick();
+				}
+			}
+		});
 		sl_panel.putConstraint(SpringLayout.NORTH, searchField, -2, SpringLayout.NORTH, searchLabel);
 		sl_panel.putConstraint(SpringLayout.WEST, searchField, 6, SpringLayout.EAST, searchLabel);
 		sl_panel.putConstraint(SpringLayout.SOUTH, searchField, 2, SpringLayout.SOUTH, searchLabel);
@@ -200,7 +221,7 @@ public class Main {
 		panel.add(searchField);
 		searchField.setColumns(10);
 		
-		JButton submitButton = new JButton("SUBMIT");
+		submitButton = new JButton("SUBMIT");
 		sl_panel.putConstraint(SpringLayout.NORTH, submitButton, 35, SpringLayout.NORTH, panel);
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -301,17 +322,17 @@ public class Main {
 		});
 	}
 	
-	private void getSearchArgs() {
-		searchArgs[0] = "%" + searchField.getText() + "%";
-		searchArgs[1] = DB_COLUMNS[categories.getSelectedIndex()];
-		searchArgs[2] = DB_COLUMNS[sortByColumn.getSelectedIndex()];
-		searchArgs[3] = (sortDirection.getSelectedIndex() == 0) ? "ASC" : "DESC";
-	}
-	
-	private void resetFields() {
+	public void resetFields() {
 		searchField.setText("");
 		categories.setSelectedIndex(4);
 		sortByColumn.setSelectedIndex(0);
 		sortDirection.setSelectedIndex(0);
+	}
+	
+	public void getSearchArgs() {
+		searchArgs[0] = "%" + searchField.getText() + "%";
+		searchArgs[1] = DB_COLUMNS[categories.getSelectedIndex()];
+		searchArgs[2] = DB_COLUMNS[sortByColumn.getSelectedIndex()];
+		searchArgs[3] = (sortDirection.getSelectedIndex() == 0) ? "ASC" : "DESC";
 	}
 }
