@@ -72,21 +72,22 @@ public class StatisticsDialog extends JDialog {
 	}
 	
 	public String constructStatistics() {
-		String mepn = db.fetchMaxPurchaseValue().toUpperCase();
-		double mepv = db.fetchPurchaseValueByName(mepn);
-		String mcpn = db.fetchMinPurchaseValue().toUpperCase();
-		double mcpv = db.fetchPurchaseValueByName(mcpn);
-		String mespn = db.fetchMaxSellValue().toUpperCase();
-		double mespv = db.fetchSellValueByName(mespn);
-		String mcspn = db.fetchMinSellValue().toUpperCase();
-		double mcspv = db.fetchSellValueByName(mcspn);
-		String pwtms = db.fetchProductMaxStock().toUpperCase();
-		String pwtls = db.fetchProductMinStock().toUpperCase();
+		String mepn = nullHandler(db.fetchMaxPurchaseValue());
+		double mepv = nullHandler(db.fetchPurchaseValueByName(mepn));
+		String mcpn = nullHandler(db.fetchMinPurchaseValue());
+		double mcpv = nullHandler(db.fetchPurchaseValueByName(mcpn));
+		String mespn = nullHandler(db.fetchMaxSellValue());
+		double mespv = nullHandler(db.fetchSellValueByName(mespn));
+		String mcspn = nullHandler(db.fetchMinSellValue());
+		double mcspv = nullHandler(db.fetchSellValueByName(mcspn));
+		String pwtms = nullHandler(db.fetchProductMaxStock());
+		String pwtls = nullHandler(db.fetchProductMinStock());
 		int tnop = db.fetchTotalCount();
 		double tnopq = db.fetchSumQuantity();
-		int tnoc = db.fetchCategories().length;
-		String pcwtmp = db.fetchCategoryMostProduct().toUpperCase();
-		String pcwtlp = db.fetchCategoryLeastProduct().toUpperCase();
+		int tnoc = (db.fetchCategories()[0].equals("--No existing record--")) 
+				? 0 : db.fetchCategories().length;
+		String pcwtmp = nullHandler(db.fetchCategoryMostProduct());
+		String pcwtlp = nullHandler(db.fetchCategoryLeastProduct());
 		double app = db.fetchAveragePurchasePrice();
 		double asp = db.fetchAverageSellingPrice();
 		double paoapoh = db.fetchSumProductPurchase();
@@ -112,7 +113,14 @@ public class StatisticsDialog extends JDialog {
 			mcspv, pwtms, pwtls, pcwtmp, pcwtlp, app, asp, paoapoh, saoapoh
 		);
 		
-		
 		return report;
+	}
+	
+	public String nullHandler(String message) {
+		return (message == null || message.equals("--No existing record--")) ? "none" : message.toUpperCase();
+	}
+	
+	public double nullHandler(double value) {
+		return (value == -1) ? 0 : value;
 	}
 }

@@ -282,15 +282,26 @@ public class InputDialog extends JDialog {
 		data[0] = productIDField.getText();
 		if (categoryCheckBox.isSelected()) {
 			String input = categoryNew.getText();
-			data[1] = input;
-			for (String category : categories) {
-				if (input.toLowerCase().equals(category.toLowerCase())) {
-					flagged = true;
-					errors[0] = "• Your new category already exists.";
+			if (input.isBlank()) {
+				flagged = true;
+				errors[0] = "• Your new category cannot be empty.";
+			} else {
+				data[1] = input;
+				for (String category : categories) {
+					if (input.toLowerCase().equals(category.toLowerCase())) {
+						flagged = true;
+						errors[0] = "• Your new category already exists.";
+					}
 				}
 			}
 		} else if (!categoryCheckBox.isSelected()) {
-			data[1] = existingCategory.getSelectedItem().toString();
+			String category = existingCategory.getSelectedItem().toString();
+			if (category.equals("--No existing record--")) {
+				flagged = true;
+				errors[0] = "• Please enter a new category.";
+			} else {
+				data[1] = category;
+			}
 		}
 		data[2] = quantityAmount.getValue().toString();
 		String uom = uomField.getText();

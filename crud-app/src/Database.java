@@ -263,6 +263,7 @@ public class Database {
 	}
 	
 	public double fetchPurchaseValueByName(String name) {
+		if (name == null) return -1;
 		try {
 			ps = con.prepareStatement(
 				"SELECT purchase_value FROM " + TABLE_NAME
@@ -278,6 +279,7 @@ public class Database {
 	}
 	
 	public double fetchSellValueByName(String name) {
+		if (name == null) return -1;
 		try {
 			ps = con.prepareStatement(
 				"SELECT sell_value FROM " + TABLE_NAME
