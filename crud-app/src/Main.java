@@ -44,13 +44,21 @@ public class Main {
 		"Product ID", "Category", "Quantity", "Unit", 
 		"Product Name", "Purchase Value", "Sell Value"
 	};
+	private final String[] DB_COLUMNS = {
+		"product_id", "category", "quantity", "uom",
+		"name", "purchase_value", "sell_value"
+	};
 	
+	private String[] searchArgs = new String[4];
 	private ImageIcon icon = new ImageIcon("images/chest.png");
 	
 	private JFrame frame;
 	private JScrollPane scrollPane;
 	private JTable table;
 	private JTextField searchField;
+	private JComboBox<String> categories;
+	private JComboBox<String> sortByColumn;
+	private JList<String> sortDirection;
 	
 	private Database db;
 	private SystemUtility su;
@@ -196,9 +204,10 @@ public class Main {
 		sl_panel.putConstraint(SpringLayout.NORTH, submitButton, 35, SpringLayout.NORTH, panel);
 		submitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (searchField.getText().isBlank())
-					table.setModel(su.generateTable(db.fetchAll(), COLUMNS));
-				
+				getSearchArgs();
+				table.setModel(su.generateTable(
+						db.fetchSpecific(searchArgs[0], searchArgs[1], searchArgs[2], searchArgs[3]), COLUMNS
+				));
 			}
 		});
 		sl_panel.putConstraint(SpringLayout.WEST, submitButton, 467, SpringLayout.WEST, panel);
@@ -225,31 +234,24 @@ public class Main {
 		submitButton.setFont(new Font("Tahoma", Font.BOLD, 11));
 		panel.add(submitButton);
 		
-		JComboBox<String> categories = new JComboBox<String>();
-		categories.setModel(new DefaultComboBoxModel<String>(
-				new String[] {
-						"-- All Columns --", COLUMNS[0], COLUMNS[1], 
-						COLUMNS[2], COLUMNS[3], COLUMNS[4], COLUMNS[5], COLUMNS[6]
-				}));
+		categories = new JComboBox<String>();
+		categories.setModel(new DefaultComboBoxModel<String>(COLUMNS));
+		categories.setSelectedIndex(4);
 		sl_panel.putConstraint(SpringLayout.NORTH, categories, -2, SpringLayout.NORTH, searchForLabel);
 		sl_panel.putConstraint(SpringLayout.WEST, categories, 6, SpringLayout.EAST, searchForLabel);
 		sl_panel.putConstraint(SpringLayout.SOUTH, categories, 2, SpringLayout.SOUTH, searchForLabel);
 		sl_panel.putConstraint(SpringLayout.EAST, categories, 368, SpringLayout.EAST, searchForLabel);
 		panel.add(categories);
 		
-		JComboBox<String> sortByColumn = new JComboBox<String>();
-		sortByColumn.setModel(new DefaultComboBoxModel<String>(
-				new String[] {
-						"-- Default --", COLUMNS[0], COLUMNS[1], 
-						COLUMNS[2], COLUMNS[3], COLUMNS[4], COLUMNS[5], COLUMNS[6]
-				}));
+		sortByColumn = new JComboBox<String>();
+		sortByColumn.setModel(new DefaultComboBoxModel<String>(COLUMNS));
 		sl_panel.putConstraint(SpringLayout.NORTH, sortByColumn, -2, SpringLayout.NORTH, orderByLabel);
 		sl_panel.putConstraint(SpringLayout.WEST, sortByColumn, 6, SpringLayout.EAST, orderByLabel);
 		sl_panel.putConstraint(SpringLayout.SOUTH, sortByColumn, 2, SpringLayout.SOUTH, orderByLabel);
 		sl_panel.putConstraint(SpringLayout.EAST, sortByColumn, 384, SpringLayout.EAST, orderByLabel);
 		panel.add(sortByColumn);
 		
-		JList<String> sortDirection = new JList<String>();
+		sortDirection = new JList<String>();
 		sl_panel.putConstraint(SpringLayout.SOUTH, submitButton, -4, SpringLayout.NORTH, sortDirection);
 		sl_panel.putConstraint(SpringLayout.NORTH, sortDirection, 71, SpringLayout.NORTH, panel);
 		sl_panel.putConstraint(SpringLayout.EAST, sortDirection, 0, SpringLayout.EAST, submitButton);
@@ -270,6 +272,7 @@ public class Main {
 
 		frame.addWindowFocusListener(new WindowFocusListener() {
 			public void windowGainedFocus(WindowEvent e) {
+				resetFields();
 				table.setModel(su.generateTable(db.fetchAll(), COLUMNS));
 			}
 			public void windowLostFocus(WindowEvent e) {}
@@ -296,5 +299,19 @@ public class Main {
 				}
 			}
 		});
+	}
+	
+	private void getSearchArgs() {
+		searchArgs[0] = "%" + searchField.getText() + "%";
+		searchArgs[1] = DB_COLUMNS[categories.getSelectedIndex()];
+		searchArgs[2] = DB_COLUMNS[sortByColumn.getSelectedIndex()];
+		searchArgs[3] = (sortDirection.getSelectedIndex() == 0) ? "ASC" : "DESC";
+	}
+	
+	private void resetFields() {
+		searchField.setText("");
+		categories.setSelectedIndex(4);
+		sortByColumn.setSelectedIndex(0);
+		sortDirection.setSelectedIndex(0);
 	}
 }

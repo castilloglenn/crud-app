@@ -172,9 +172,7 @@ public class Database {
 			int size = count.getInt(1);
 			
 			PreparedStatement fetchAll = con.prepareStatement(
-				"SELECT * FROM " + TABLE_NAME + ";",
-				ResultSet.TYPE_SCROLL_INSENSITIVE,
-				ResultSet.CONCUR_READ_ONLY
+				"SELECT * FROM " + TABLE_NAME + ";"
 			);
 			
 			ResultSet datas = fetchAll.executeQuery();
@@ -197,15 +195,6 @@ public class Database {
 			return convertedList;
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} catch (NullPointerException e) {
-			JOptionPane.showMessageDialog(
-				null, 
-				"Please open MySQL Server/XAMPP in order to continue.\n"
-				+ "Database connection is null.", 
-				"No database found", 
-				JOptionPane.WARNING_MESSAGE
-			);
-			System.exit(0);
 		}
 		return null;
 	}
@@ -225,6 +214,53 @@ public class Database {
 				return new String[] {"--No existing record--"};
 			
 			return temp.toArray(new String[0]);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public Object[][] fetchSpecific(String keyword, String column, String columnOrder, String orderVector) {
+		try {
+			PreparedStatement countAll = con.prepareStatement(
+				String.format(
+					"SELECT COUNT(product_id) "
+					+ "FROM " + TABLE_NAME + " "
+					+ "WHERE %s LIKE \"%s\";",
+					column, keyword
+				)
+			);
+			ResultSet count = countAll.executeQuery();
+			count.next();
+			int size = count.getInt(1);
+			
+			PreparedStatement fetchAll = con.prepareStatement(
+				String.format(
+					"SELECT * "
+					+ "FROM " + TABLE_NAME + " "
+					+ "WHERE %s LIKE \"%s\" "
+					+ "ORDER BY %s %s;",
+					column, keyword, columnOrder, orderVector
+				)
+			);
+			ResultSet datas = fetchAll.executeQuery();
+			Object[][] convertedList = new Object[size][7];
+			
+			int index = 0;
+			while (datas.next()) {
+				Object[] row = new Object[7];
+				row[0] = datas.getLong(1);
+				row[1] = datas.getString(2);
+				row[2] = datas.getDouble(3);
+				row[3] = datas.getString(4);
+				row[4] = datas.getString(5);
+				row[5] = datas.getDouble(6);
+				row[6] = datas.getDouble(7);
+				convertedList[index] = row;
+				index++;
+			}
+			
+			return convertedList;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

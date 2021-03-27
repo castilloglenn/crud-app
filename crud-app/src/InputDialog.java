@@ -274,7 +274,7 @@ public class InputDialog extends JDialog {
 		setVisible(true);
 	}
 	
-	public Object[] getAllFields() {
+	private Object[] getAllFields() {
 		Object[] data = new Object[7];
 		Object[] errors = new Object[2];
 		boolean flagged = false;
@@ -312,7 +312,7 @@ public class InputDialog extends JDialog {
 		return (flagged) ? errors : data;
 	}
 	
-	public boolean evaluateFields() {
+	private boolean evaluateFields() {
 		Object[] data = getAllFields();
 		if (data.length == 7) {
 			JOptionPane.showMessageDialog(null, "New Product Added! (" + nameField.getText() + ")");
@@ -337,7 +337,7 @@ public class InputDialog extends JDialog {
 		return false;
 	}
 	
-	public void clearFields() {
+	private void clearFields() {
 		productIDField.setText(Long.toString(su.generateProductID()));
 		if (categoryCheckBox.isSelected()) {
 			categoryNew.setText("");

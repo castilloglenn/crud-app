@@ -364,7 +364,7 @@ public class ManageDialog extends JDialog {
 		setVisible(true);
 	}
 	
-	public void clearAndDisableFields() {
+	private void clearAndDisableFields() {
 		existingCategory.setSelectedIndex(-1); existingCategory.setEnabled(false);
 		categoryNew.setText(""); categoryNew.setEnabled(false);
 		quantityAmount.setValue(1); quantityAmount.setEnabled(false);
@@ -373,12 +373,13 @@ public class ManageDialog extends JDialog {
 		purchaseAmount.setValue(1); purchaseAmount.setEnabled(false);
 		sellAmount.setValue(1); sellAmount.setEnabled(false);
 		
+		categoryCheckBox.setSelected(false);
 		categoryCheckBox.setEnabled(false);
 		updateButton.setEnabled(false);
 		deleteButton.setEnabled(false);
 	}
 	
-	public void enableAndSetFields() {
+	private void enableAndSetFields() {
 		for (int index = 0; index < categories.length; index++) {
 			if (data[1].toString().equals(categories[index])) {
 				existingCategory.setSelectedIndex(index);
@@ -399,7 +400,7 @@ public class ManageDialog extends JDialog {
 		deleteButton.setEnabled(true);
 	}
 	
-	public void updateSwitch() {
+	private void updateSwitch() {
 		try {
 			boolean categorySelector = (existingCategory.getSelectedItem() == null) 
 				? categoryNew.getText().equals(data[1])
@@ -421,15 +422,20 @@ public class ManageDialog extends JDialog {
 		}
 	}
 	
-	public Object[] getAllFields() {
+	private Object[] getAllFields() {
 		Object[] data = new Object[7];
-		Object[] errors = new Object[1];
+		Object[] errors = new Object[2];
 		boolean flagged = false;
 		
 		data[0] = productIDField.getText();
 		if (categoryCheckBox.isSelected()) {
 			String input = categoryNew.getText();
-			data[1] = input;
+			if (input.isBlank()) {
+				flagged = true;
+				errors[0] = "• Your new category field cannot be empty.";
+			} else {
+				data[1] = input;
+			}
 		} else if (!categoryCheckBox.isSelected()) {
 			data[1] = existingCategory.getSelectedItem().toString();
 		}
@@ -443,7 +449,7 @@ public class ManageDialog extends JDialog {
 		}
 		if (name.isBlank()) {
 			flagged = true;
-			errors[0] = "• Product name cannot be empty.";
+			errors[1] = "• Product name cannot be empty.";
 		}
 		data[4] = name;
 		
@@ -453,7 +459,7 @@ public class ManageDialog extends JDialog {
 		return (flagged) ? errors : data;
 	}
 	
-	public boolean evaluateFields() {
+	private boolean evaluateFields() {
 		Object[] data = getAllFields();
 		if (data.length == 7) {
 			Object[] inputs = {
@@ -476,8 +482,9 @@ public class ManageDialog extends JDialog {
 			JOptionPane.showMessageDialog(null,
 				String.format("Please check your inputs:\n"
 						+ "%s%s",
-						(data[0] == null) ? data[1].toString() : data[0],
-						(data[0] == null) ? "" : "\n" + data[1])
+						(data[0] == null) ? data[1] : data[0],
+						(data[1] == null) ? "" : "\n" + data[1]
+						)
 			);
 		}
 		return false;
