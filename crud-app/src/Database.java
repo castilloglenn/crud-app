@@ -30,7 +30,6 @@ public class Database {
 			stmt = con.createStatement();
 			createDatabase();
 			createTable();
-			fetchDataByID(42103225006L);
 		} catch (SQLException e) {
 			JOptionPane.showMessageDialog(
 				null, 
