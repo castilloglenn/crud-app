@@ -110,7 +110,7 @@ public class InputDialog extends JDialog {
 		existingCategory.setModel(new DefaultComboBoxModel<String>(categories));
 		existingCategory.setBounds(124, 93, 230, 17);
 		DefaultListCellRenderer listRenderer = new DefaultListCellRenderer();
-		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER); // center-aligned items
+		listRenderer.setHorizontalAlignment(DefaultListCellRenderer.CENTER);
 		existingCategory.setRenderer(listRenderer);
 		panel.add(existingCategory);
 		
