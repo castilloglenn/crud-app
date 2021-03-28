@@ -229,6 +229,7 @@ public class Main {
 				table.setModel(su.generateTable(
 						db.fetchSpecific(searchArgs[0], searchArgs[1], searchArgs[2], searchArgs[3]), COLUMNS
 				));
+				scrollPane.getVerticalScrollBar().setValue(0);
 			}
 		});
 		sl_panel.putConstraint(SpringLayout.WEST, submitButton, 467, SpringLayout.WEST, panel);
