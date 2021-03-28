@@ -20,6 +20,7 @@ import javax.swing.JButton;
 import java.awt.GridLayout;
 import javax.swing.JCheckBox;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import java.awt.event.ActionEvent;
 
 @SuppressWarnings("serial")
@@ -326,16 +327,22 @@ public class InputDialog extends JDialog {
 	private boolean evaluateFields() {
 		Object[] data = getAllFields();
 		if (data.length == 7) {
-			JOptionPane.showMessageDialog(null, "New Product Added! (" + nameField.getText() + ")");
-			db.insertData(
-				Long.parseLong(data[0].toString()),
-				data[1].toString(),
-				Double.parseDouble(data[2].toString()),
-				data[3].toString(),
-				data[4].toString(),
-				Double.parseDouble(data[5].toString()),
-				Double.parseDouble(data[6].toString())
-			);
+			try {
+				db.insertData(
+					Long.parseLong(data[0].toString()),
+					data[1].toString(),
+					Double.parseDouble(data[2].toString()),
+					data[3].toString(),
+					data[4].toString(),
+					Double.parseDouble(data[5].toString()),
+					Double.parseDouble(data[6].toString())
+				);
+				JOptionPane.showMessageDialog(null, "New Product Added! (" + nameField.getText() + ")");
+			} catch (NumberFormatException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				JOptionPane.showMessageDialog(null, "Product (" + nameField.getText() + ") already exists!");
+			}
 			return true;
 		} else if (data.length == 2) {
 			JOptionPane.showMessageDialog(null,

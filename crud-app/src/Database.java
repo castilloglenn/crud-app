@@ -54,23 +54,20 @@ public class Database {
 	
 	// This method will return -1 in some cases that an error might occur within the database.
 	public int insertData(long product_id, String category, double quantity, 
-			String uom, String name, double purchase_value, double sell_value) {
-		try {
-			ps = con.prepareStatement(
-				"INSERT INTO " + TABLE_NAME +
-				" VALUES (?, ?, ?, ?, ?, ?, ?);");
-			ps.setLong(1, product_id);
-			ps.setString(2, category);
-			ps.setDouble(3, quantity);
-			ps.setString(4, uom);
-			ps.setString(5, name);
-			ps.setDouble(6, purchase_value);
-			ps.setDouble(7, sell_value);
-			return ps.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return -1;
-		}
+			String uom, String name, double purchase_value, double sell_value) 
+			throws SQLException {
+		ps = con.prepareStatement(
+			"INSERT INTO " + TABLE_NAME +
+			" VALUES (?, ?, ?, ?, ?, ?, ?);");
+		ps.setLong(1, product_id);
+		ps.setString(2, category);
+		ps.setDouble(3, quantity);
+		ps.setString(4, uom);
+		ps.setString(5, name);
+		ps.setDouble(6, purchase_value);
+		ps.setDouble(7, sell_value);
+		
+		return ps.executeUpdate();
 	}
 	
 	// Returns false if there are inconsistencies within the argument's length.
