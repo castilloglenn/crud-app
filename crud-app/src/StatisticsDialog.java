@@ -26,7 +26,7 @@ public class StatisticsDialog extends JDialog {
 
 		setIconImage(icon.getImage());
 		setTitle(TITLE);
-		setSize(400, 600);
+		setSize(400, 500);
 		getContentPane().setBackground(new Color(51, 51, 51));
 		SpringLayout springLayout = new SpringLayout();
 		getContentPane().setLayout(springLayout);
@@ -53,7 +53,7 @@ public class StatisticsDialog extends JDialog {
 		
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setBorder(new SoftBevelBorder(BevelBorder.LOWERED, null, null, null, null));
-		scrollPane.setBounds(12, 48, 340, 480);
+		scrollPane.setBounds(12, 48, 340, 380);
 		panel.add(scrollPane);
 		
 		JTextPane textField = new JTextPane();

@@ -498,7 +498,7 @@ public class Database {
 	public double fetchSumProductPurchase() {
 		try {
 			ps = con.prepareStatement(
-				"SELECT SUM(purchase_value) FROM " + TABLE_NAME + ";"
+				"SELECT SUM(purchase_value * quantity) FROM " + TABLE_NAME + ";"
 			);
 			ResultSet name = ps.executeQuery();
 			if (name.next()) return name.getDouble(1);
@@ -511,7 +511,7 @@ public class Database {
 	public double fetchSumProductSell() {
 		try {
 			ps = con.prepareStatement(
-				"SELECT SUM(sell_value) FROM " + TABLE_NAME + ";"
+				"SELECT SUM(sell_value * quantity) FROM " + TABLE_NAME + ";"
 			);
 			ResultSet name = ps.executeQuery();
 			if (name.next()) return name.getDouble(1);
